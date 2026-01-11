@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Productos - Tienda Tecnológica GPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-box-seam"></i> Gestión de Productos
+        </h2>
+        {% if session.rol == 'administrador' %}
+        <a href="{{ url_for('nuevo_producto') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Producto
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="productosTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Marca/Modelo</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td><code>{{ producto.codigo }}</code></td>
+                            <td><strong>{{ producto.nombre }}</strong></td>
+                            <td>
+                                {% if producto.categoria_nombre %}
+                                <span class="badge bg-info">{{ producto.categoria_nombre }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Sin categoría</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ producto.marca }} {{ producto.modelo }}</td>
+                            <td><strong>S/ {{ "%.2f"|format(producto.precio) }}</strong></td>
+                            <td class="text-center">
+                                <span class="badge {% if producto.stock <= producto.stock_minimo %}bg-danger{% elif producto.stock <= producto.stock_minimo * 2 %}bg-warning{% else %}bg-success{% endif %}">
+                                    {{ producto.stock }} unidades
+                                </span>
+                            </td>
+                            <td>
+                                {% if producto.stock <= producto.stock_minimo %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-exclamation-triangle"></i> Crítico
+                                </span>
+                                {% elif producto.stock <= producto.stock_minimo * 2 %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-exclamation-circle"></i> Bajo
+                                </span>
+                                {% else %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Normal
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if session.rol == 'administrador' %}
+                                <a href="{{ url_for('editar_producto', id=producto.id) }}" 
+                                   class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{{ url_for('eliminar_producto', id=producto.id) }}" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Está seguro de eliminar este producto?')"
+                                   title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% else %}
+                                <button class="btn btn-sm btn-secondary" disabled>
+                                    <i class="bi bi-eye"></i> Ver
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Funcionalidad de búsqueda en la tabla
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'form-control mb-3';
+        searchInput.placeholder = 'Buscar producto...';
+        
+        const table = document.getElementById('productosTable');
+        table.parentElement.insertBefore(searchInput, table);
+        
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

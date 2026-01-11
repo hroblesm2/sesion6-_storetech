@@ -1,0 +1,173 @@
+# 🗄️ DIAGRAMA DE BASE DE DATOS - TIENDA TECNOLÓGICA GPS
+
+## ESTRUCTURA DE TABLAS
+
+┌─────────────────────────────────────────────────────────────┐
+│                        USUARIOS                              │
+├─────────────────────────────────────────────────────────────┤
+│ 🔑 id                    INTEGER PRIMARY KEY                 │
+│    username              TEXT UNIQUE NOT NULL                │
+│    password              TEXT NOT NULL (HASH)                │
+│    nombre_completo       TEXT NOT NULL                       │
+│    email                 TEXT UNIQUE NOT NULL                │
+│    rol                   TEXT NOT NULL ['administrador',     │
+│                                         'asesor']            │
+│    activo                INTEGER DEFAULT 1                   │
+│    fecha_creacion        TIMESTAMP DEFAULT CURRENT_TIMESTAMP │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                       CATEGORIAS                             │
+├─────────────────────────────────────────────────────────────┤
+│ 🔑 id                    INTEGER PRIMARY KEY                 │
+│    nombre                TEXT UNIQUE NOT NULL                │
+│    descripcion           TEXT                                │
+│    activo                INTEGER DEFAULT 1                   │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                        PRODUCTOS                             │
+├─────────────────────────────────────────────────────────────┤
+│ 🔑 id                    INTEGER PRIMARY KEY                 │
+│    codigo                TEXT UNIQUE NOT NULL                │
+│    nombre                TEXT NOT NULL                       │
+│    descripcion           TEXT                                │
+│ 🔗 categoria_id          INTEGER → categorias(id)            │
+│    marca                 TEXT                                │
+│    modelo                TEXT                                │
+│    precio                REAL NOT NULL                       │
+│    stock                 INTEGER DEFAULT 0                   │
+│    stock_minimo          INTEGER DEFAULT 5                   │
+│    imagen_url            TEXT                                │
+│    activo                INTEGER DEFAULT 1                   │
+│    fecha_creacion        TIMESTAMP DEFAULT CURRENT_TIMESTAMP │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENTES                              │
+├─────────────────────────────────────────────────────────────┤
+│ 🔑 id                    INTEGER PRIMARY KEY                 │
+│    documento             TEXT UNIQUE NOT NULL                │
+│    tipo_documento        TEXT NOT NULL                       │
+│    nombre                TEXT NOT NULL                       │
+│    apellido              TEXT NOT NULL                       │
+│    email                 TEXT                                │
+│    telefono              TEXT                                │
+│    direccion             TEXT                                │
+│    fecha_registro        TIMESTAMP DEFAULT CURRENT_TIMESTAMP │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                          VENTAS                              │
+├─────────────────────────────────────────────────────────────┤
+│ 🔑 id                    INTEGER PRIMARY KEY                 │
+│    numero_venta          TEXT UNIQUE NOT NULL                │
+│ 🔗 cliente_id            INTEGER → clientes(id)              │
+│ 🔗 usuario_id            INTEGER → usuarios(id)              │
+│    fecha_venta           TIMESTAMP DEFAULT CURRENT_TIMESTAMP │
+│    subtotal              REAL NOT NULL                       │
+│    igv                   REAL NOT NULL                       │
+│    total                 REAL NOT NULL                       │
+│    estado                TEXT DEFAULT 'completada'           │
+│    metodo_pago           TEXT                                │
+│    observaciones         TEXT                                │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                     DETALLE_VENTAS                           │
+├─────────────────────────────────────────────────────────────┤
+│ 🔑 id                    INTEGER PRIMARY KEY                 │
+│ 🔗 venta_id              INTEGER → ventas(id)                │
+│ 🔗 producto_id           INTEGER → productos(id)             │
+│    cantidad              INTEGER NOT NULL                    │
+│    precio_unitario       REAL NOT NULL                       │
+│    subtotal              REAL NOT NULL                       │
+└─────────────────────────────────────────────────────────────┘
+
+
+## RELACIONES
+
+CATEGORIAS ──1:N──> PRODUCTOS
+    Una categoría puede tener múltiples productos
+    Un producto pertenece a una categoría
+
+USUARIOS ──1:N──> VENTAS
+    Un usuario puede realizar múltiples ventas
+    Una venta es realizada por un usuario
+
+CLIENTES ──1:N──> VENTAS
+    Un cliente puede tener múltiples ventas
+    Una venta puede tener un cliente (opcional)
+
+VENTAS ──1:N──> DETALLE_VENTAS
+    Una venta tiene múltiples detalles (productos)
+    Un detalle pertenece a una venta
+
+PRODUCTOS ──1:N──> DETALLE_VENTAS
+    Un producto puede estar en múltiples detalles de venta
+    Un detalle de venta referencia a un producto
+
+
+## ÍNDICES AUTOMÁTICOS
+
+Por claves primarias:
+- usuarios(id)
+- categorias(id)
+- productos(id)
+- clientes(id)
+- ventas(id)
+- detalle_ventas(id)
+
+Por campos UNIQUE:
+- usuarios(username)
+- usuarios(email)
+- categorias(nombre)
+- productos(codigo)
+- clientes(documento)
+- ventas(numero_venta)
+
+
+## DATOS INICIALES
+
+USUARIOS:
+├─ admin (Administrador) - admin123
+└─ asesor (Asesor) - asesor123
+
+CATEGORÍAS:
+├─ Laptops
+├─ Smartphones
+├─ Tablets
+├─ Accesorios
+├─ Componentes
+├─ Audio
+└─ Gaming
+
+PRODUCTOS (8 productos de ejemplo):
+├─ LAP001 - Laptop HP Pavilion 15 (S/ 2,499.00)
+├─ LAP002 - Laptop Lenovo IdeaPad (S/ 2,799.00)
+├─ CEL001 - iPhone 15 Pro (S/ 5,499.00)
+├─ CEL002 - Samsung Galaxy S24 (S/ 4,299.00)
+├─ TAB001 - iPad Air (S/ 3,499.00)
+├─ ACC001 - Mouse Logitech MX Master (S/ 349.00)
+├─ ACC002 - Teclado Mecánico RGB (S/ 599.00)
+└─ AUD001 - Audífonos Sony WH-1000XM5 (S/ 1,299.00)
+
+
+## REGLAS DE NEGOCIO IMPLEMENTADAS
+
+✓ Las contraseñas se almacenan hasheadas (nunca en texto plano)
+✓ Los roles son: 'administrador' o 'asesor'
+✓ El stock se actualiza automáticamente al realizar ventas
+✓ El IGV se calcula automáticamente (18%)
+✓ Los números de venta son únicos y auto-generados
+✓ Los productos pueden tener stock mínimo para alertas
+✓ Las ventas pueden ser con o sin cliente registrado
+✓ Los precios se manejan con 2 decimales
+
+## SEGURIDAD
+
+✓ SQL Injection: Prevención mediante parámetros preparados
+✓ Passwords: Hash con Werkzeug (bcrypt)
+✓ Sesiones: Manejo seguro con Flask sessions
+✓ Validación de roles: Decoradores @login_required y @admin_required
+✓ Datos sensibles: Nunca expuestos en logs o respuestas

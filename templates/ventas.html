@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Ventas - Tienda Tecnológica GPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-cart-check"></i> Gestión de Ventas
+        </h2>
+        <a href="{{ url_for('nueva_venta') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nueva Venta
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="ventasTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>N° Venta</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th>Subtotal</th>
+                            <th>IGV (18%)</th>
+                            <th>Total</th>
+                            <th>Método Pago</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                        <tr>
+                            <td><strong>{{ venta.numero_venta }}</strong></td>
+                            <td>{{ venta.fecha_venta[:16] }}</td>
+                            <td>{{ venta.cliente_nombre or 'Cliente General' }}</td>
+                            <td>{{ venta.vendedor }}</td>
+                            <td>S/ {{ "%.2f"|format(venta.subtotal) }}</td>
+                            <td>S/ {{ "%.2f"|format(venta.igv) }}</td>
+                            <td><strong>S/ {{ "%.2f"|format(venta.total) }}</strong></td>
+                            <td>
+                                <span class="badge bg-info">{{ venta.metodo_pago or 'N/A' }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">{{ venta.estado }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('detalle_venta', id=venta.id) }}" 
+                                   class="btn btn-sm btn-primary" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'form-control mb-3';
+        searchInput.placeholder = 'Buscar venta...';
+        
+        const table = document.getElementById('ventasTable');
+        table.parentElement.insertBefore(searchInput, table);
+        
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

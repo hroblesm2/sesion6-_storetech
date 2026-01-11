@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Venta{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">
+                <i class="bi bi-cart-plus"></i> Nueva Venta
+            </h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" id="ventaForm">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Cliente (Opcional)</label>
+                        <select class="form-select" name="cliente_id" id="clienteSelect">
+                            <option value="">Cliente General</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}">
+                                {{ cliente.nombre }} {{ cliente.apellido }} - {{ cliente.documento }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">
+                            <a href="{{ url_for('nuevo_cliente') }}" target="_blank">
+                                <i class="bi bi-plus-circle"></i> Registrar nuevo cliente
+                            </a>
+                        </small>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Método de Pago <span class="text-danger">*</span></label>
+                        <select class="form-select" name="metodo_pago" required>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                            <option value="transferencia">Transferencia Bancaria</option>
+                            <option value="yape">Yape/Plin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5>Productos</h5>
+                <div id="productosContainer">
+                    <div class="row mb-3 producto-item">
+                        <div class="col-md-5">
+                            <label class="form-label">Producto</label>
+                            <select class="form-select producto-select" name="producto_id[]" required>
+                                <option value="">Seleccione un producto</option>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}" 
+                                        data-precio="{{ producto.precio }}"
+                                        data-stock="{{ producto.stock }}">
+                                    {{ producto.nombre }} - S/ {{ "%.2f"|format(producto.precio) }} 
+                                    (Stock: {{ producto.stock }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" class="form-control cantidad-input" 
+                                   name="cantidad[]" min="1" value="1" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Precio Unit.</label>
+                            <input type="text" class="form-control precio-display" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Subtotal</label>
+                            <input type="text" class="form-control subtotal-display" readonly>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-danger w-100 remove-producto" disabled>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary mb-3" id="addProducto">
+                    <i class="bi bi-plus-circle"></i> Agregar Producto
+                </button>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-control" name="observaciones" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5>Resumen</h5>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <strong id="subtotalTotal">S/ 0.00</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>IGV (18%):</span>
+                                    <strong id="igvTotal">S/ 0.00</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total:</strong>
+                                    <strong class="text-primary" id="total" style="font-size: 1.5rem;">S/ 0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('ventas') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Registrar Venta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('productosContainer');
+    const addBtn = document.getElementById('addProducto');
+    
+    // Calcular totales
+    function calcularTotales() {
+        let subtotal = 0;
+        
+        document.querySelectorAll('.producto-item').forEach(item => {
+            const select = item.querySelector('.producto-select');
+            const cantidad = parseFloat(item.querySelector('.cantidad-input').value) || 0;
+            const precio = parseFloat(select.options[select.selectedIndex]?.dataset.precio) || 0;
+            const itemSubtotal = precio * cantidad;
+            
+            item.querySelector('.precio-display').value = 'S/ ' + precio.toFixed(2);
+            item.querySelector('.subtotal-display').value = 'S/ ' + itemSubtotal.toFixed(2);
+            
+            subtotal += itemSubtotal;
+        });
+        
+        const igv = subtotal * 0.18;
+        const total = subtotal + igv;
+        
+        document.getElementById('subtotalTotal').textContent = 'S/ ' + subtotal.toFixed(2);
+        document.getElementById('igvTotal').textContent = 'S/ ' + igv.toFixed(2);
+        document.getElementById('total').textContent = 'S/ ' + total.toFixed(2);
+    }
+    
+    // Event listener para cambios en productos y cantidades
+    container.addEventListener('change', calcularTotales);
+    container.addEventListener('input', calcularTotales);
+    
+    // Agregar producto
+    addBtn.addEventListener('click', function() {
+        const firstItem = document.querySelector('.producto-item');
+        const newItem = firstItem.cloneNode(true);
+        
+        newItem.querySelector('.producto-select').value = '';
+        newItem.querySelector('.cantidad-input').value = '1';
+        newItem.querySelector('.precio-display').value = '';
+        newItem.querySelector('.subtotal-display').value = '';
+        newItem.querySelector('.remove-producto').disabled = false;
+        
+        container.appendChild(newItem);
+        actualizarBotonesEliminar();
+    });
+    
+    // Eliminar producto
+    container.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-producto')) {
+            const items = document.querySelectorAll('.producto-item');
+            if (items.length > 1) {
+                e.target.closest('.producto-item').remove();
+                calcularTotales();
+                actualizarBotonesEliminar();
+            }
+        }
+    });
+    
+    function actualizarBotonesEliminar() {
+        const items = document.querySelectorAll('.producto-item');
+        items.forEach((item, index) => {
+            item.querySelector('.remove-producto').disabled = items.length === 1;
+        });
+    }
+    
+    // Validación de stock
+    container.addEventListener('change', function(e) {
+        if (e.target.classList.contains('producto-select') || e.target.classList.contains('cantidad-input')) {
+            const item = e.target.closest('.producto-item');
+            const select = item.querySelector('.producto-select');
+            const cantidadInput = item.querySelector('.cantidad-input');
+            
+            const stock = parseInt(select.options[select.selectedIndex]?.dataset.stock) || 0;
+            const cantidad = parseInt(cantidadInput.value) || 0;
+            
+            if (cantidad > stock) {
+                alert('La cantidad solicitada supera el stock disponible (' + stock + ' unidades)');
+                cantidadInput.value = stock;
+                calcularTotales();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

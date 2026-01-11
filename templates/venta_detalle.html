@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle de Venta - {{ venta.numero_venta }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-receipt"></i> Detalle de Venta: {{ venta.numero_venta }}
+        </h2>
+        <a href="{{ url_for('ventas') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Información de la Venta</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Número de Venta:</strong><br>
+                            <span class="fs-5">{{ venta.numero_venta }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha y Hora:</strong><br>
+                            {{ venta.fecha_venta }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Vendedor:</strong><br>
+                            {{ venta.vendedor }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Estado:</strong><br>
+                            <span class="badge bg-success">{{ venta.estado }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Método de Pago:</strong><br>
+                            <span class="badge bg-info">{{ venta.metodo_pago or 'No especificado' }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if venta.observaciones %}
+                    <hr>
+                    <div>
+                        <strong>Observaciones:</strong><br>
+                        <p class="mb-0">{{ venta.observaciones }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Datos del Cliente</h5>
+                </div>
+                <div class="card-body">
+                    {% if venta.cliente_nombre %}
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Nombre:</strong><br>
+                            {{ venta.cliente_nombre }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Documento:</strong><br>
+                            {{ venta.documento }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Teléfono:</strong><br>
+                            {{ venta.telefono or 'No registrado' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Email:</strong><br>
+                            {{ venta.email or 'No registrado' }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Cliente General (sin datos registrados)</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Productos Vendidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detalle in detalles %}
+                                <tr>
+                                    <td><code>{{ detalle.codigo }}</code></td>
+                                    <td>{{ detalle.producto_nombre }}</td>
+                                    <td class="text-center">{{ detalle.cantidad }}</td>
+                                    <td class="text-end">S/ {{ "%.2f"|format(detalle.precio_unitario) }}</td>
+                                    <td class="text-end"><strong>S/ {{ "%.2f"|format(detalle.subtotal) }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Resumen de Pago</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Subtotal:</span>
+                        <strong>S/ {{ "%.2f"|format(venta.subtotal) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>IGV (18%):</span>
+                        <strong>S/ {{ "%.2f"|format(venta.igv) }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong style="font-size: 1.2rem;">Total:</strong>
+                        <strong class="text-success" style="font-size: 1.5rem;">
+                            S/ {{ "%.2f"|format(venta.total) }}
+                        </strong>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary w-100" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir Comprobante
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+@media print {
+    .navbar, .btn, .card-footer {
+        display: none !important;
+    }
+    .sticky-top {
+        position: relative !important;
+    }
+}
+</style>
+{% endblock %}

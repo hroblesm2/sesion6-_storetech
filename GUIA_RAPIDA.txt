@@ -1,0 +1,300 @@
+# 🚀 GUÍA RÁPIDA DE USO - TIENDA VIRTUAL GPS
+
+## INICIO RÁPIDO EN 3 PASOS
+
+### Windows:
+1. Hacer doble clic en `iniciar.bat`
+2. Esperar a que se abra el navegador
+3. Iniciar sesión con: admin / admin123
+
+### Linux/Mac:
+1. Abrir terminal en la carpeta del proyecto
+2. Ejecutar: `./iniciar.sh`
+3. Abrir navegador en: http://localhost:5000
+4. Iniciar sesión con: admin / admin123
+
+---
+
+## 👤 USUARIOS DEL SISTEMA
+
+### ADMINISTRADOR
+**Usuario:** admin  
+**Contraseña:** admin123  
+**Puede hacer:**
+- ✅ Gestionar productos (crear, editar, eliminar)
+- ✅ Gestionar usuarios del sistema
+- ✅ Gestionar categorías
+- ✅ Realizar ventas
+- ✅ Gestionar clientes
+- ✅ Ver todas las estadísticas
+
+### ASESOR
+**Usuario:** asesor  
+**Contraseña:** asesor123  
+**Puede hacer:**
+- ✅ Ver lista de productos
+- ✅ Realizar ventas
+- ✅ Gestionar clientes
+- ✅ Ver estadísticas básicas
+- ❌ No puede modificar productos ni usuarios
+
+---
+
+## 📱 FLUJO DE TRABAJO COMPLETO
+
+### 1️⃣ PRIMERA VEZ EN EL SISTEMA
+
+**Paso 1: Familiarízate con el Dashboard**
+- Ver las 4 tarjetas de estadísticas
+- Revisar productos con stock bajo
+- Ver últimas ventas
+
+**Paso 2: Explorar los Productos**
+- Ir a "Productos" en el menú
+- Ver los 8 productos de ejemplo
+- Observar códigos, precios y stock
+
+**Paso 3: Conocer las Categorías**
+- Menú → Administración → Categorías
+- Ver las 7 categorías disponibles
+
+---
+
+### 2️⃣ REGISTRAR UNA VENTA (PASO A PASO)
+
+**Paso 1: Registrar Cliente (Opcional)**
+```
+1. Menú → Clientes → Nuevo Cliente
+2. Llenar datos:
+   - Tipo Documento: DNI
+   - Número: 12345678
+   - Nombres: Juan
+   - Apellidos: Pérez
+   - Email: juan@email.com
+   - Teléfono: 987654321
+3. Guardar
+```
+
+**Paso 2: Crear Nueva Venta**
+```
+1. Menú → Ventas → Nueva Venta
+2. Seleccionar cliente (o dejar "Cliente General")
+3. Elegir método de pago: Efectivo/Tarjeta/Transferencia/Yape
+```
+
+**Paso 3: Agregar Productos**
+```
+1. Seleccionar producto del dropdown
+2. Especificar cantidad
+3. Ver precio y subtotal automáticos
+4. Clic en "Agregar Producto" para más items
+```
+
+**Paso 4: Revisar y Confirmar**
+```
+1. Ver resumen a la derecha:
+   - Subtotal
+   - IGV (18%)
+   - Total
+2. Agregar observaciones (opcional)
+3. Clic en "Registrar Venta"
+```
+
+**Paso 5: Ver Comprobante**
+```
+1. Automáticamente irás al detalle
+2. Revisar todos los datos
+3. Clic en "Imprimir Comprobante" si necesitas
+```
+
+---
+
+### 3️⃣ GESTIONAR PRODUCTOS (Solo Administrador)
+
+**Crear Producto Nuevo:**
+```
+1. Menú → Productos → Nuevo Producto
+2. Llenar datos obligatorios (*):
+   - Código: Ej. "LAP003"
+   - Nombre: "Laptop Dell Inspiron"
+   - Precio: 2999.00
+   - Stock: 10
+   - Stock Mínimo: 5
+3. Datos opcionales:
+   - Categoría
+   - Marca/Modelo
+   - Descripción
+4. Guardar
+```
+
+**Editar Producto:**
+```
+1. En lista de productos, clic en ícono lápiz amarillo
+2. Modificar campos necesarios
+3. Guardar
+```
+
+**Eliminar Producto:**
+```
+1. Clic en ícono de basura rojo
+2. Confirmar eliminación
+3. El producto se marca como inactivo (no se borra)
+```
+
+---
+
+### 4️⃣ GESTIONAR USUARIOS (Solo Administrador)
+
+**Crear Usuario Nuevo:**
+```
+1. Menú → Administración → Usuarios
+2. Clic en "Nuevo Usuario"
+3. Llenar:
+   - Username: sin espacios
+   - Nombre completo
+   - Email
+   - Contraseña: mínimo 6 caracteres
+   - Rol: Asesor o Administrador
+4. Guardar
+```
+
+**Diferencias entre Roles:**
+- **Administrador**: Acceso total
+- **Asesor**: Solo ventas y consultas
+
+---
+
+## 🔍 BÚSQUEDA RÁPIDA
+
+En todas las tablas (Productos, Ventas, Clientes):
+1. Usar el campo de búsqueda arriba de la tabla
+2. Escribir cualquier dato (código, nombre, documento, etc.)
+3. La tabla se filtra automáticamente
+4. No es necesario presionar Enter
+
+---
+
+## 📊 ENTENDER EL DASHBOARD
+
+### Tarjeta AZUL - Total Productos
+- Muestra productos activos en el sistema
+- Incluye todos con stock > 0
+
+### Tarjeta AMARILLA - Stock Bajo  
+- Productos con stock ≤ stock_mínimo
+- Requiere atención urgente
+- Ver detalle en tabla inferior
+
+### Tarjeta VERDE - Ventas Hoy
+- Cantidad de ventas realizadas hoy
+- Se actualiza en tiempo real
+
+### Tarjeta AZUL CLARO - Ingresos Hoy
+- Total en soles de ventas del día
+- Incluye IGV
+
+---
+
+## ⚠️ ALERTAS Y ESTADOS
+
+### Alertas de Stock:
+- 🔴 **CRÍTICO**: Stock ≤ Stock Mínimo
+- 🟡 **BAJO**: Stock ≤ Stock Mínimo × 2
+- 🟢 **NORMAL**: Stock > Stock Mínimo × 2
+
+### Estados de Venta:
+- 🟢 **Completada**: Venta finalizada exitosamente
+- (Futuro: Pendiente, Cancelada, etc.)
+
+---
+
+## 💡 TIPS Y TRUCOS
+
+### Para Ventas Rápidas:
+1. Tener clientes pre-registrados
+2. Conocer códigos de productos más vendidos
+3. Usar búsqueda rápida en dropdowns
+
+### Control de Stock:
+1. Revisar dashboard diariamente
+2. Atender alertas rojas primero
+3. Ajustar stock_minimo según rotación
+
+### Seguridad:
+1. Cambiar contraseñas por defecto
+2. No compartir usuario admin
+3. Crear usuarios específicos por empleado
+4. Cerrar sesión al terminar
+
+---
+
+## 🐛 SOLUCIÓN DE PROBLEMAS
+
+### "No se puede conectar"
+✅ Verificar que el servidor esté corriendo
+✅ Comprobar URL: http://localhost:5000
+✅ Revisar firewall
+
+### "Usuario o contraseña incorrectos"
+✅ Verificar mayúsculas/minúsculas
+✅ Usar credenciales por defecto primero
+✅ Resetear contraseña (contactar admin)
+
+### "El producto ya existe"
+✅ El código debe ser único
+✅ Usar un código diferente
+✅ Ejemplo: LAP001, LAP002, etc.
+
+### "Stock insuficiente"
+✅ Revisar stock disponible
+✅ Reducir cantidad en venta
+✅ Actualizar stock del producto
+
+---
+
+## 🎯 CASOS DE USO COMUNES
+
+### Escenario 1: Cliente nuevo que compra
+```
+1. Registrar cliente
+2. Nueva venta → seleccionar ese cliente
+3. Agregar productos
+4. Confirmar venta
+```
+
+### Escenario 2: Venta rápida sin cliente
+```
+1. Nueva venta → dejar "Cliente General"
+2. Agregar productos
+3. Confirmar
+```
+
+### Escenario 3: Revisar ventas del día
+```
+1. Ver dashboard
+2. Revisar "Ventas Hoy" y "Ingresos Hoy"
+3. Clic en tabla "Últimas Ventas" para detalles
+```
+
+### Escenario 4: Reabastecer stock
+```
+1. Ver alertas en dashboard
+2. Ir a Productos
+3. Editar producto
+4. Aumentar stock
+5. Guardar
+```
+
+---
+
+## 📞 CONTACTO Y SOPORTE
+
+Para soporte técnico o consultas:
+- Contactar a GPS Management
+- Revisar README.md para información técnica
+- Consultar DIAGRAMA_BASE_DATOS.txt para estructura
+
+---
+
+**Sistema desarrollado para GPS Management**  
+Versión 1.0 - Diciembre 2024

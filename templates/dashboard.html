@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tienda Tecnológica GPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-speedometer2"></i> Dashboard
+        <small class="text-muted">Panel de Control</small>
+    </h2>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Productos</h6>
+                            <h2 class="mb-0">{{ total_productos }}</h2>
+                        </div>
+                        <i class="bi bi-box-seam" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Stock Bajo</h6>
+                            <h2 class="mb-0">{{ productos_bajo_stock }}</h2>
+                        </div>
+                        <i class="bi bi-exclamation-triangle" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Ventas Hoy</h6>
+                            <h2 class="mb-0">{{ ventas_hoy }}</h2>
+                        </div>
+                        <i class="bi bi-cart-check" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Ingresos Hoy</h6>
+                            <h2 class="mb-0">S/ {{ "%.2f"|format(ingresos_hoy) }}</h2>
+                        </div>
+                        <i class="bi bi-cash-stack" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Productos con bajo stock -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Alertas de Stock
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if productos_alerta %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Producto</th>
+                                    <th>Stock</th>
+                                    <th>Mín.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in productos_alerta %}
+                                <tr>
+                                    <td><code>{{ producto.codigo }}</code></td>
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>
+                                        <span class="badge bg-danger">{{ producto.stock }}</span>
+                                    </td>
+                                    <td>{{ producto.stock_minimo }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success mb-0">
+                        <i class="bi bi-check-circle"></i> Todos los productos tienen stock adecuado
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimas ventas -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history"></i> Últimas Ventas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if ultimas_ventas %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>N° Venta</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for venta in ultimas_ventas %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('detalle_venta', id=venta.id) }}">
+                                            {{ venta.numero_venta }}
+                                        </a>
+                                    </td>
+                                    <td>{{ venta.cliente_nombre or 'Cliente General' }}</td>
+                                    <td><strong>S/ {{ "%.2f"|format(venta.total) }}</strong></td>
+                                    <td><small>{{ venta.fecha_venta[:16] }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No hay ventas registradas
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning"></i> Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('nueva_venta') }}" class="btn btn-success w-100">
+                                <i class="bi bi-cart-plus"></i> Nueva Venta
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('nuevo_cliente') }}" class="btn btn-info w-100">
+                                <i class="bi bi-person-plus"></i> Nuevo Cliente
+                            </a>
+                        </div>
+                        {% if session.rol == 'administrador' %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('nuevo_producto') }}" class="btn btn-primary w-100">
+                                <i class="bi bi-box-seam"></i> Nuevo Producto
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('usuarios') }}" class="btn btn-secondary w-100">
+                                <i class="bi bi-people"></i> Gestionar Usuarios
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
